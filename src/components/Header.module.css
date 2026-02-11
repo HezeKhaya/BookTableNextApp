@@ -1,0 +1,139 @@
+.header {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+    background-color: var(--background);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--foreground);
+}
+
+.logoText {
+    font-family: serif;
+}
+
+.searchBar {
+    flex: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted-foreground);
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border);
+    background-color: var(--secondary);
+    color: var(--foreground);
+    outline: none;
+    font-size: 0.9rem;
+    transition: box-shadow 0.2s;
+}
+
+.searchInput:focus {
+    box-shadow: 0 0 0 2px var(--ring);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.actionBtn {
+    position: relative;
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.actionBtn:hover {
+    background-color: var(--secondary);
+}
+
+.badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-size: 0.7rem;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userProfile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    /* Gold/Bronze */
+    color: var(--primary-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.userName {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.userRole {
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+}
+
+@media (max-width: 768px) {
+    .searchBar {
+        display: none;
+        /* Simplify for mobile for now */
+    }
+}

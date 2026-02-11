@@ -1,13 +1,53 @@
 :root {
+  /* Light Mode - White & Bronze */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
+  
+  --primary: #cd7f32; /* Bronze */
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  
+  --accent: #cd7f32;
+  --accent-foreground: #ffffff;
+  
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #cd7f32;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark Mode - Very Dark Blue & Gold */
+    --background: #020a19; /* Very Dark Blue */
+    --foreground: #ffffff;
+    
+    --primary: #ffd700; /* Gold */
+    --primary-foreground: #020a19;
+    
+    --secondary: #1e293b;
+    --secondary-foreground: #ffffff;
+    
+    --muted: #1e293b;
+    --muted-foreground: #94a3b8;
+    
+    --accent: #ffd700;
+    --accent-foreground: #020a19;
+    
+    --border: #1e293b;
+    --input: #1e293b;
+    --ring: #ffd700;
   }
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
 html,
@@ -22,12 +62,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 a {
