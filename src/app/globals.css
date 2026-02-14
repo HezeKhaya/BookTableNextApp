@@ -2,19 +2,20 @@
   /* Light Mode - White & Bronze */
   --background: #ffffff;
   --foreground: #1a1a1a;
-  
-  --primary: #cd7f32; /* Bronze */
+
+  --primary: #cd7f32;
+  /* Bronze */
   --primary-foreground: #ffffff;
-  
+
   --secondary: #f4f4f5;
   --secondary-foreground: #18181b;
-  
+
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
-  
+
   --accent: #cd7f32;
   --accent-foreground: #ffffff;
-  
+
   --border: #e4e4e7;
   --input: #e4e4e7;
   --ring: #cd7f32;
@@ -23,21 +24,23 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* Dark Mode - Very Dark Blue & Gold */
-    --background: #020a19; /* Very Dark Blue */
+    --background: #020a19;
+    /* Very Dark Blue */
     --foreground: #ffffff;
-    
-    --primary: #ffd700; /* Gold */
+
+    --primary: #ffd700;
+    /* Gold */
     --primary-foreground: #020a19;
-    
+
     --secondary: #1e293b;
     --secondary-foreground: #ffffff;
-    
+
     --muted: #1e293b;
     --muted-foreground: #94a3b8;
-    
+
     --accent: #ffd700;
     --accent-foreground: #020a19;
-    
+
     --border: #1e293b;
     --input: #1e293b;
     --ring: #ffd700;
@@ -72,5 +75,21 @@ a {
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
