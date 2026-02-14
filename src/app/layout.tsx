@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Book Table | Curated E-Bookstore",
-  description: "A boutique e-bookstore for the discerning reader.",
+  title: "Book Table Online",
+  description: "Browse your church's book table catalogue.",
 };
 
 export default function RootLayout({
