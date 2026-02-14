@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "images.isbndb.com",
+      },
+      {
+        protocol: "https",
+        hostname: "www.goodneighbours.org.za",
+      }
     ],
   },
 };

@@ -2,79 +2,29 @@ import Header from '@/components/Header';
 import FilterChips from '@/components/FilterChips';
 import BookCard from '@/components/BookCard';
 import styles from './page.module.css';
+import { supabase } from '@/lib/supabaseClient';
+import { Book } from '@/types/database.types';
 
-// Dummy Data
-const books = [
-  {
-    id: 1,
-    title: "The Midnight Library",
-    author: "Matt Haig",
-    price: 14.99,
-    category: "Fiction",
-    coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: 2,
-    title: "Grid Systems",
-    author: "Josef Müller-Brockmann",
-    price: 45.00,
-    category: "Design",
-    coverImage: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800",
-    tag: "Bestseller"
-  },
-  {
-    id: 3,
-    title: "Devotions",
-    author: "Mary Oliver",
-    price: 22.50,
-    category: "Poetry",
-    coverImage: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: 4,
-    title: "Sapiens",
-    author: "Yuval Noah Harari",
-    price: 18.99,
-    category: "Non-Fiction",
-    coverImage: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800", // Placeholder reuse
-  },
-  {
-    id: 5,
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    price: 12.00,
-    category: "Classics",
-    coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800", // Placeholder reuse
-  },
-  {
-    id: 6,
-    title: "The Silk Roads",
-    author: "Peter Frankopan",
-    price: 16.50,
-    originalPrice: 22.00,
-    category: "History",
-    coverImage: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=800", // Placeholder reuse
-    tag: "Sale"
-  },
-  {
-    id: 7,
-    title: "Meditations",
-    author: "Marcus Aurelius",
-    price: 10.99,
-    category: "Philosophy",
-    coverImage: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800", // Placeholder reuse
-  },
-  {
-    id: 8,
-    title: "Dune",
-    author: "Frank Herbert",
-    price: 19.99,
-    category: "Sci-Fi",
-    coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800", // Placeholder reuse
+// Force dynamic rendering to ensure we get fresh data
+export const dynamic = 'force-dynamic';
+
+async function getBooks() {
+  const { data: books, error } = await supabase
+    .from('books')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching books:', error);
+    return [];
   }
-];
 
-export default function Home() {
+  return books as Book[];
+}
+
+export default async function Home() {
+  const books = await getBooks();
+
   return (
     <main className={styles.main}>
       <Header />
@@ -97,7 +47,13 @@ export default function Home() {
           {books.map((book) => (
             <BookCard
               key={book.id}
-              {...book}
+              title={book.title}
+              author={book.author}
+              price={book.price}
+              originalPrice={book.retail > book.price ? book.retail : undefined}
+              coverImage={book.image_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800'}
+              category={book.category}
+              tag={book.discount > 0 ? `${book.discount}% OFF` : undefined}
             />
           ))}
         </section>
