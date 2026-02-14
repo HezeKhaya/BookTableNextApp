@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { ShoppingBag, Search, User } from 'lucide-react';
+import { ShoppingBag, Search } from 'lucide-react';
 import styles from './Header.module.css';
 
-export default function Header() {
+export default function Header({ onSearch }: { onSearch?: (query: string) => void }) {
     return (
         <header className={styles.header}>
             <div className={`container ${styles.container}`}>
@@ -16,6 +16,7 @@ export default function Header() {
                         type="text"
                         placeholder="Search titles, authors, or ISBNs..."
                         className={styles.searchInput}
+                        onChange={(e) => onSearch?.(e.target.value)}
                     />
                 </div>
 
