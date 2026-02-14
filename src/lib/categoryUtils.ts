@@ -4,6 +4,8 @@ export const CATEGORY_MAPPINGS: Record<string, string> = {
     DOCT: 'Doctrine',
     FAM: 'Family',
     CH: 'Uncategorised',
+    REF: 'Reference',
+    PURITAN: 'Puritan'
 };
 
 export function getTopLevelCategory(categoryString: string): string {
