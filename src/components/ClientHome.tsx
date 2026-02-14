@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Header from '@/components/Header';
 import FilterChips from '@/components/FilterChips';
 import BookCard from '@/components/BookCard';
 import styles from '@/app/page.module.css';
 import { Book } from '@/types/database.types';
+import { getTopLevelCategory, getCategoryDisplayName } from '@/lib/categoryUtils';
 
 interface ClientHomeProps {
     initialBooks: Book[];
@@ -13,10 +14,40 @@ interface ClientHomeProps {
 
 export default function ClientHome({ initialBooks }: ClientHomeProps) {
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-    const filteredBooks = initialBooks.filter((book) =>
-        book.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const categories = useMemo(() => {
+        const uniqueCodes = new Set<string>();
+        initialBooks.forEach((book) => {
+            if (book.category) {
+                uniqueCodes.add(getTopLevelCategory(book.category));
+            } else {
+                uniqueCodes.add('CH');
+            }
+        });
+
+        return Array.from(uniqueCodes).map((code) => ({
+            id: code,
+            label: getCategoryDisplayName(code),
+        })).sort((a, b) => a.label.localeCompare(b.label));
+    }, [initialBooks]);
+
+    const toggleCategory = (id: string) => {
+        setSelectedCategories((prev) =>
+            prev.includes(id)
+                ? prev.filter((c) => c !== id)
+                : [...prev, id]
+        );
+    };
+
+    const filteredBooks = initialBooks.filter((book) => {
+        const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const topLevelCat = book.category ? getTopLevelCategory(book.category) : 'CH';
+        const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(topLevelCat);
+
+        return matchesSearch && matchesCategory;
+    });
 
     return (
         <main className={styles.main}>
@@ -33,7 +64,11 @@ export default function ClientHome({ initialBooks }: ClientHomeProps) {
                 </section>
 
                 <nav className={styles.filters}>
-                    <FilterChips />
+                    <FilterChips
+                        categories={categories}
+                        selectedCategories={selectedCategories}
+                        onToggleCategory={toggleCategory}
+                    />
                 </nav>
 
                 <section className={styles.grid}>
