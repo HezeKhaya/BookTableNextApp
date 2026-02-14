@@ -32,10 +32,10 @@ export default async function Home() {
       <div className={`container ${styles.content}`}>
         <section className={styles.hero}>
           <h1 className={styles.heroTitle}>
-            Curated pages for the <span className={styles.highlight}>modern mind</span>
+            Visit many good books <span className={styles.highlight}>but live in the Bible</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Discover our limited selection of monthly reads, hand-picked for quality and depth.
+            Discover the selection of books available at the Heritage Book Table
           </p>
         </section>
 

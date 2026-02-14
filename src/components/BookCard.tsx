@@ -41,9 +41,9 @@ export default function BookCard({
 
                 <div className={styles.footer}>
                     <div className={styles.priceContainer}>
-                        <span className={styles.price}>${price.toFixed(2)}</span>
+                        <span className={styles.price}>R{price.toFixed(2)}</span>
                         {originalPrice && (
-                            <span className={styles.originalPrice}>${originalPrice.toFixed(2)}</span>
+                            <span className={styles.originalPrice}>R{originalPrice.toFixed(2)}</span>
                         )}
                     </div>
                     <button className={styles.wishlistBtn} aria-label="Add to wishlist">
