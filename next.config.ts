@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  rewrites: async () => {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://bt-catalog.azurewebsites.net/api/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
