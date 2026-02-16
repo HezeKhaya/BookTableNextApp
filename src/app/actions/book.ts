@@ -17,6 +17,21 @@ export async function getBooks() {
     return { books };
 }
 
+export async function getBookById(id: number) {
+    const { data: book, error } = await supabase
+        .from('books')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) {
+        console.error('Error fetching book:', error);
+        return { error: 'Failed to fetch book' };
+    }
+
+    return { book };
+}
+
 export async function updateStock(bookId: number, newQuantity: number) {
     // Note: Since we are using custom auth without server-side sessions, 
     // we cannot strictly verify the user here without passing a token.

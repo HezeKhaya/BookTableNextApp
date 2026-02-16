@@ -76,6 +76,7 @@ export default function ClientHome({ initialBooks }: ClientHomeProps) {
                         filteredBooks.map((book) => (
                             <BookCard
                                 key={book.id}
+                                id={book.id}
                                 title={book.title}
                                 author={book.author}
                                 price={book.price}
