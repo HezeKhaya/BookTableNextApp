@@ -1,13 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import Header from '@/components/Header';
+import { useAuth } from '@/context/AuthContext';
 
 export default function AddBookPage() {
     const [code, setCode] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading) {
+            if (!user || user.role_id <= 1) {
+                router.push('/');
+            }
+        }
+    }, [user, loading, router]);
+
+    if (loading) {
+        return <div className="loading">Loading...</div>;
+    }
+
+    if (!user || user.role_id <= 1) {
+        return null; // Or return nothing while redirecting
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

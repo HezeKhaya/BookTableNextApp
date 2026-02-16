@@ -23,6 +23,29 @@
     color: var(--foreground);
 }
 
+.leftSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hamburgerBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--foreground);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.hamburgerBtn:hover {
+    background-color: var(--secondary);
+}
+
 .logoText {
     font-family: serif;
 }

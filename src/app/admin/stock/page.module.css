@@ -1,0 +1,176 @@
+.container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: bold;
+    font-family: serif;
+    color: var(--foreground);
+}
+
+.addBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.addBtn:hover {
+    background-color: #b87333;
+    /* Darker bronze */
+}
+
+
+
+.filtersBar {
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.searchWrapper {
+    flex: 1;
+    max-width: 400px;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: var(--secondary);
+    color: var(--foreground);
+    outline: none;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.searchInput:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(205, 127, 50, 0.2);
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    background-color: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.table th {
+    background-color: var(--secondary);
+    font-weight: 600;
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.codeCell {
+    font-family: monospace;
+    color: var(--muted-foreground);
+}
+
+.bookTitle {
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.bookAuthor {
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+}
+
+.qtyInput {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.actionBtnEdit,
+.actionBtnDelete,
+.actionBtnSave,
+.actionBtnCancel {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionBtnEdit {
+    color: var(--primary);
+}
+
+.actionBtnEdit:hover {
+    background-color: rgba(205, 127, 50, 0.1);
+}
+
+.actionBtnDelete {
+    color: #ef4444;
+}
+
+.actionBtnDelete:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.actionBtnSave {
+    color: #22c55e;
+}
+
+.actionBtnSave:hover {
+    background-color: rgba(34, 197, 94, 0.1);
+}
+
+.actionBtnCancel {
+    color: var(--muted-foreground);
+}
+
+.actionBtnCancel:hover {
+    background-color: var(--secondary);
+}
