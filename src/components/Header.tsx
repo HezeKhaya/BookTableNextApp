@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ShoppingBag, Search, LogOut, User as UserIcon, Menu } from 'lucide-react';
 import styles from './Header.module.css';
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 import SideMenu from './SideMenu';
 
 export default function Header({
@@ -16,6 +17,7 @@ export default function Header({
     showSearch?: boolean;
 }) {
     const { user, role, logout } = useAuth();
+    const { count } = useCart();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -73,8 +75,10 @@ export default function Header({
 
                     <div className={styles.actions}>
                         <Link href="/cart" className={styles.actionBtn}>
-                            <ShoppingBag size={20} />
-                            <span className={styles.badge}>2</span>
+                            <div className={styles.cartIconWrapper}>
+                                <ShoppingBag size={20} />
+                                {count > 0 && <span className={styles.badge}>{count}</span>}
+                            </div>
                         </Link>
 
                         {user ? (

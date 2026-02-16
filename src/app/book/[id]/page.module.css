@@ -186,3 +186,57 @@
     color: var(--muted-foreground);
     font-size: 1.05rem;
 }
+
+.addToCartWrapper {
+    flex: 1;
+    position: relative;
+}
+
+.errorToast {
+    position: absolute;
+    bottom: 110%;
+    /* Above the button */
+    left: 0;
+    right: 0;
+    /* Or wider if needed */
+    width: 300px;
+    /* Fixed width or max-content */
+    background-color: #1e293b;
+    /* Slate 800 */
+    color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-size: 0.9rem;
+    z-index: 50;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.errorToast::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 20px;
+    border-width: 6px;
+    border-style: solid;
+    border-color: #1e293b transparent transparent transparent;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stockCount {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    font-weight: 500;
+}

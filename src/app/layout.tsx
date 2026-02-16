@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "Browse your church's book table catalogue.",
 };
 
+import { CartProvider } from "@/context/CartContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AuthProvider>
-          {children}
+          <CartProvider>
+            {children}
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

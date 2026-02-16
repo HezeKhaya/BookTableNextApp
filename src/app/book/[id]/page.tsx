@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, ShoppingCart, Heart } from 'lucide-react';
 import styles from './page.module.css';
+import AddToCartButton from '@/components/AddToCartButton';
 
 export default async function BookDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -63,14 +64,14 @@ export default async function BookDetailsPage({ params }: { params: Promise<{ id
                                     <span className={styles.originalPrice}>R {book.retail}</span>
                                 )}
                             </div>
-                            <span className={styles.sku}>SKU: {book.sku_number || book.code || 'N/A'}</span>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                <span className={styles.sku}>SKU: {book.sku_number || book.code || 'N/A'}</span>
+                                <span className={styles.stockCount}>{book.qty_in_stock} in stock</span>
+                            </div>
                         </div>
 
                         <div className={styles.actions}>
-                            <button className={styles.addToCartBtn}>
-                                <ShoppingCart size={20} />
-                                Add to Cart
-                            </button>
+                            <AddToCartButton bookId={book.id} className={styles.addToCartBtn} />
                             <button className={styles.wishlistBtn}>
                                 <Heart size={20} />
                             </button>
