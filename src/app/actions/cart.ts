@@ -116,7 +116,7 @@ export async function addToCart(bookId: number, quantity: number = 1, userId?: s
                 // Note: We can't set cookies directly in server actions in some Next.js versions cleanly 
                 // without using middleware or returning the ID to the client to set.
                 // However, `cookies().set(...)` is available in Server Actions.
-                cookieStore.set('cartId', cartId, { maxAge: 60 * 60 * 24 * 30 });
+                cookieStore.set('cartId', newCart.id, { maxAge: 60 * 60 * 24 * 30 });
             }
         }
     }
