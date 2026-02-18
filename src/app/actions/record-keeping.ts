@@ -154,6 +154,7 @@ export async function searchBooks(query: string) {
         .from('books')
         .select('*')
         .or(`title.ilike.%${query}%,author.ilike.%${query}%,sku_number.ilike.%${query}%`)
+        .gt('qty_in_stock', 0) // Exclude out of stock
         .limit(10);
 
     if (error) {

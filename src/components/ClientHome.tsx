@@ -83,6 +83,7 @@ export default function ClientHome({ initialBooks }: ClientHomeProps) {
                                 originalPrice={book.retail > book.price ? book.retail : undefined}
                                 coverImage={book.image_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800'}
                                 category={book.category}
+                                qtyInStock={book.qty_in_stock}
                             />
                         ))
                     ) : (

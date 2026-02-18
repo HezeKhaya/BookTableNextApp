@@ -12,6 +12,7 @@ interface BookCardProps {
     coverImage: string;
     category: string;
     tag?: string; // 'Bestseller', 'Sale', etc.
+    qtyInStock?: number;
 }
 
 export default function BookCard({
@@ -22,19 +23,23 @@ export default function BookCard({
     originalPrice,
     coverImage,
     category,
-    tag
+    tag,
+    qtyInStock = 1 // Default to 1 if not provided to avoid breaking existing without data
 }: BookCardProps) {
+    const isOutOfStock = qtyInStock <= 0;
+
     return (
-        <div className={styles.cardWrapper}>
+        <div className={`${styles.cardWrapper} ${isOutOfStock ? styles.outOfStockWrapper : ''}`}>
             <Link href={`/book/${id}`} className={styles.cardLink}>
                 <div className={styles.card}>
                     <div className={styles.imageContainer}>
-                        {tag && <span className={styles.tag}>{tag}</span>}
+                        {tag && !isOutOfStock && <span className={styles.tag}>{tag}</span>}
+                        {isOutOfStock && <span className={styles.oosBadge}>Out of Stock</span>}
                         <Image
                             src={coverImage}
                             alt={title}
                             fill
-                            className={styles.image}
+                            className={`${styles.image} ${isOutOfStock ? styles.oosImage : ''}`}
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                     </div>

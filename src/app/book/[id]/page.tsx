@@ -71,7 +71,13 @@ export default async function BookDetailsPage({ params }: { params: Promise<{ id
                         </div>
 
                         <div className={styles.actions}>
-                            <AddToCartButton bookId={book.id} className={styles.addToCartBtn} />
+                            {book.qty_in_stock > 0 ? (
+                                <AddToCartButton bookId={book.id} className={styles.addToCartBtn} />
+                            ) : (
+                                <button className={styles.outOfStockBtn} disabled>
+                                    Out of Stock
+                                </button>
+                            )}
                             <button className={styles.wishlistBtn}>
                                 <Heart size={20} />
                             </button>

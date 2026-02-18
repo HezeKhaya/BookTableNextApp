@@ -8,9 +8,10 @@ import styles from '@/app/book/[id]/page.module.css'; // We might need to adjust
 interface AddToCartButtonProps {
     bookId: number;
     className?: string;
+    disabled?: boolean;
 }
 
-export default function AddToCartButton({ bookId, className }: AddToCartButtonProps) {
+export default function AddToCartButton({ bookId, className, disabled = false }: AddToCartButtonProps) {
     const { addToCart } = useCart();
     const [isAdding, setIsAdding] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
@@ -39,7 +40,7 @@ export default function AddToCartButton({ bookId, className }: AddToCartButtonPr
             <button
                 className={`${className || ''}`}
                 onClick={handleAddToCart}
-                disabled={isAdding || isSuccess}
+                disabled={disabled || isAdding || isSuccess}
             >
                 {isAdding ? (
                     <Loader2 size={20} className="animate-spin" />
