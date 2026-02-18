@@ -1,0 +1,181 @@
+.wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    background: var(--secondary);
+}
+
+.searchIcon {
+    color: var(--muted-foreground);
+    margin-right: 0.5rem;
+}
+
+.searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 1rem;
+}
+
+.loading {
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.resultsList {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--background);
+    /* Adapts to theme */
+    border: 1px solid var(--border);
+    color: var(--foreground);
+}
+
+.resultsList li {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.resultsList li:last-child {
+    border-bottom: none;
+}
+
+.resultsList li:hover {
+    background: var(--secondary);
+}
+
+.resultsList li strong {
+    font-size: 0.95rem;
+    color: var(--foreground);
+}
+
+.resultsList li span {
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+}
+
+.selectedCard {
+    border: 1px solid var(--primary);
+    background: rgba(var(--primary-rgb), 0.05);
+    /* Assuming primary-rgb var exists or just default */
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.customerInfo h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.customerInfo p {
+    margin: 0.2rem 0 0;
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+}
+
+.changeBtn {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.createForm {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--card);
+}
+
+.formHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.formHeader h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.formHeader button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.input {
+    width: 100%;
+    padding: 0.6rem;
+    margin-bottom: 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: #1e293b;
+    background: #fff;
+}
+
+.submitBtn {
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.noResults,
+.emptyPrompt {
+    padding: 1rem;
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    color: var(--muted-foreground);
+}
+
+.createBtn {
+    margin-top: 0.5rem;
+    background: var(--secondary);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--foreground);
+    font-size: 0.9rem;
+}

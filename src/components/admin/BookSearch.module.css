@@ -1,0 +1,78 @@
+.wrapper {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    background: var(--secondary);
+}
+
+.searchIcon {
+    color: var(--muted-foreground);
+    margin-right: 0.5rem;
+}
+
+.searchInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    background: transparent;
+    color: var(--foreground);
+    font-size: 1rem;
+}
+
+.loading {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.resultsList {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 0 0 6px 6px;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-y: auto;
+    background: var(--background);
+    /* Adapts to theme */
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: var(--foreground);
+}
+
+.resultsList li {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.resultsList li:hover {
+    background: var(--secondary);
+}
+
+.resultsList li strong {
+    font-size: 0.95rem;
+    color: var(--foreground);
+}
+
+.resultsList li span {
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+}
