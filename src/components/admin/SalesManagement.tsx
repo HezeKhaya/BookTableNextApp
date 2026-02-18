@@ -7,6 +7,7 @@ import CustomerSearch from './CustomerSearch';
 import BookSearch from './BookSearch';
 import { Trash2, Save, ShoppingCart, Loader2 } from 'lucide-react';
 import styles from './SalesManagement.module.css';
+import PendingSalesList from './PendingSalesList';
 
 type CartItem = {
     book: Book;
@@ -216,6 +217,8 @@ export default function SalesManagement() {
                             Record Sale
                         </button>
                     </section>
+
+                    <PendingSalesList />
                 </div>
             </div>
         </div>

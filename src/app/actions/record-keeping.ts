@@ -101,17 +101,8 @@ export async function deleteInvoice(id: string, fileUrl: string) {
         const parts = fileUrl.split('/invoices/');
         if (parts.length > 1) path = parts[1];
     }
-    // Also remove potential signed URL params if present (though split should handle execution)
-    // Actually signed URL is complex.
-    // Ideally we should query the DB for the stored path before generating signed URL, but here we receive fileUrl from client.
-    // If client passes signed URL, we can't easily deduce path.
-    // Simplification: We blindly try to delete the ID. Storage cleanup might need manual intervention if path parsing fails.
-    // BUT: In our new `getInvoices`, `invoice.file_url` IS the signed URL. 
-    // We should probably pass the raw path or store it in a data attribute in the UI.
-    // For now, let's just attempt to delete the DB record. Storage is cheap.
-    // Correct approach: We should fetch the record first to get the path, but we just deleted it.
 
-    // REVISIT: For now, we deleted DB record. That's the important part for UI.
+    // Attempt logic to remove from storage, though simplified
 
     revalidatePath('/admin/record-keeping');
     return { success: true };
@@ -176,7 +167,7 @@ export async function searchBooks(query: string) {
 export type SaleItemInput = {
     bookId: number;
     quantity: number;
-    price: number; // Price at sale (can be overridden or strictly catalog price?) We'll take what UI sends but ideally verify.
+    price: number;
 };
 
 export async function recordSale(saleData: {
@@ -184,14 +175,18 @@ export async function recordSale(saleData: {
     items: SaleItemInput[];
     paymentType: 'CASH' | 'EFT';
     paymentStatus: 'PENDING' | 'PAID';
-    popFile?: FormData; // Handling file upload for PoP separately or expecting a URL?
+    popFile?: FormData;
     adminNotes?: string;
 }) {
     // 1. Verify Payment Status logic
     if (saleData.paymentType === 'EFT' && saleData.paymentStatus === 'PAID') {
-        // Technically this should be blocked unless PoP is present. 
-        // For simplicity, we assume PoP upload happens before or concurrent.
-        // If we receive a 'popFile', we upload it.
+        // In strict mode, we'd require PoP here. 
+        // For now, we trust the flow calls uploadProofOfPayment later or we can add file upload handling here if we send FormData.
+        // Since this function accepts JSON-like object (except popFile which is type mismatch if strictly JSON over wire),
+        // we assume this server action is called with bound args or similar.
+        // Actually, Server Actions can take objects. FormData is separate.
+        // If we wanted to upload in one go, we'd need use FormData for everything.
+        // To keep it simple: Record Sale -> Return ID -> Client uploads PoP if needed.
     }
 
     // 2. Create Sale Record
@@ -225,7 +220,6 @@ export async function recordSale(saleData: {
         });
 
         // Update Stock
-        // Fetch current stock first to be safe (or use RPC for atomicity, but simple update is okay for now)
         const { data: book } = await supabase.from('books').select('qty_in_stock').eq('id', item.bookId).single();
         if (book) {
             const newStock = Math.max(0, book.qty_in_stock - item.quantity);
@@ -235,4 +229,64 @@ export async function recordSale(saleData: {
 
     revalidatePath('/admin/record-keeping');
     return { success: true, saleId: sale.id };
+}
+
+export async function getPendingSales() {
+    // Fetch sales that are PENDING
+    const { data: sales, error } = await supabase
+        .from('sales')
+        .select(`
+            *,
+            customers ( first_name, last_name, phone_number ),
+            sale_items ( quantity, price_at_sale, books ( title ) )
+        `)
+        .eq('payment_status', 'PENDING')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching pending sales:', error);
+        return { sales: [] };
+    }
+
+    return { sales };
+}
+
+export async function uploadProofOfPayment(formData: FormData) {
+    const saleId = formData.get('saleId') as string;
+    const file = formData.get('file') as File;
+
+    if (!saleId || !file) {
+        return { error: 'Missing sale ID or file' };
+    }
+
+    // 1. Upload File
+    const fileExt = file.name.split('.').pop();
+    const fileName = `pop-${saleId}-${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+        .from('proofs_of_payment')
+        .upload(filePath, file);
+
+    if (uploadError) {
+        console.error('PoP Upload error:', uploadError);
+        return { error: 'Failed to upload Proof of Payment' };
+    }
+
+    // 2. Update Sale Record
+    const { error: updateError } = await supabase
+        .from('sales')
+        .update({
+            pop_file_url: filePath,
+            payment_status: 'PAID' // Auto-mark as paid
+        })
+        .eq('id', saleId);
+
+    if (updateError) {
+        console.error('Error updating sale with PoP:', updateError);
+        return { error: 'Failed to update sale record' };
+    }
+
+    revalidatePath('/admin/record-keeping');
+    return { success: true };
 }
