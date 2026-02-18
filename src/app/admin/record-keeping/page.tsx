@@ -4,11 +4,11 @@ import Header from '@/components/Header';
 import { useState } from 'react';
 import styles from './page.module.css';
 import InvoiceManagement from '@/components/admin/InvoiceManagement';
-import SalesManagement from '@/components/admin/SalesManagement';
+import SalesHistoryTable from '@/components/admin/SalesHistoryTable';
 // Future imports: StockSnapshots
 
 export default function RecordKeepingPage() {
-    const [activeTab, setActiveTab] = useState<'invoices' | 'sales' | 'snapshots'>('invoices');
+    const [activeTab, setActiveTab] = useState<'invoices' | 'history' | 'snapshots'>('invoices');
 
     return (
         <main>
@@ -24,10 +24,10 @@ export default function RecordKeepingPage() {
                         Supplier Invoices
                     </button>
                     <button
-                        className={`${styles.tab} ${activeTab === 'sales' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('sales')}
+                        className={`${styles.tab} ${activeTab === 'history' ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab('history')}
                     >
-                        Manual Sales
+                        Sales History
                     </button>
                     <button
                         className={`${styles.tab} ${activeTab === 'snapshots' ? styles.activeTab : ''}`}
@@ -39,7 +39,7 @@ export default function RecordKeepingPage() {
 
                 <div className={styles.content}>
                     {activeTab === 'invoices' && <InvoiceManagement />}
-                    {activeTab === 'sales' && <SalesManagement />}
+                    {activeTab === 'history' && <SalesHistoryTable />}
                     {activeTab === 'snapshots' && <div>Stock Snapshots (Coming Soon)</div>}
                 </div>
             </div>

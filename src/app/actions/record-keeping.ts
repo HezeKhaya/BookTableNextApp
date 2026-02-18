@@ -181,12 +181,7 @@ export async function recordSale(saleData: {
     // 1. Verify Payment Status logic
     if (saleData.paymentType === 'EFT' && saleData.paymentStatus === 'PAID') {
         // In strict mode, we'd require PoP here. 
-        // For now, we trust the flow calls uploadProofOfPayment later or we can add file upload handling here if we send FormData.
-        // Since this function accepts JSON-like object (except popFile which is type mismatch if strictly JSON over wire),
-        // we assume this server action is called with bound args or similar.
-        // Actually, Server Actions can take objects. FormData is separate.
-        // If we wanted to upload in one go, we'd need use FormData for everything.
-        // To keep it simple: Record Sale -> Return ID -> Client uploads PoP if needed.
+        // For complexity management, we trust the flow calls uploadProofOfPayment later.
     }
 
     // 2. Create Sale Record
@@ -289,4 +284,122 @@ export async function uploadProofOfPayment(formData: FormData) {
 
     revalidatePath('/admin/record-keeping');
     return { success: true };
+}
+
+export type SalesFilter = {
+    search?: string;
+    paymentStatus?: 'PAID' | 'PENDING' | 'ALL';
+    paymentType?: 'CASH' | 'EFT' | 'ALL';
+    startDate?: string;
+    endDate?: string;
+};
+
+export async function getSalesHistory(
+    page: number = 1,
+    pageSize: number = 10,
+    filters: SalesFilter = {}
+) {
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+
+    let query = supabase
+        .from('sales')
+        .select(`
+            *,
+            customers ( first_name, last_name, phone_number ),
+            sale_items ( quantity, price_at_sale, books ( title ) )
+        `, { count: 'exact' });
+
+    // Apply Filters
+    if (filters.paymentStatus && filters.paymentStatus !== 'ALL') {
+        query = query.eq('payment_status', filters.paymentStatus);
+    }
+
+    if (filters.paymentType && filters.paymentType !== 'ALL') {
+        query = query.eq('payment_type', filters.paymentType);
+    }
+
+    if (filters.startDate) {
+        query = query.gte('created_at', filters.startDate);
+    }
+
+    if (filters.endDate) {
+        // Assume date is YYYY-MM-DD. We want to include that whole day.
+        const endDataObj = new Date(filters.endDate);
+        endDataObj.setDate(endDataObj.getDate() + 1);
+        query = query.lt('created_at', endDataObj.toISOString());
+    }
+
+    if (filters.search) {
+        // Simplified Search: Find matching customers first
+        const { data: customerIds } = await supabase
+            .from('customers')
+            .select('id')
+            .or(`first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,phone_number.ilike.%${filters.search}%`);
+
+        // Find matching books
+        const { data: bookIds } = await supabase
+            .from('books')
+            .select('id')
+            .ilike('title', `%${filters.search}%`);
+
+        // Find relevant sale IDs based on books
+        let relevantSaleIdsFileItems: string[] = [];
+        if (bookIds && bookIds.length > 0) {
+            const { data: saleItems } = await supabase
+                .from('sale_items')
+                .select('sale_id')
+                .in('book_id', bookIds.map(b => b.id));
+            if (saleItems) {
+                relevantSaleIdsFileItems = saleItems.map(si => si.sale_id);
+            }
+        }
+
+        const validCustomerIds = customerIds?.map(c => c.id) || [];
+
+        // Combine: Customer IDs OR Sale IDs from books
+        const conditions = [];
+        if (validCustomerIds.length > 0) conditions.push(`customer_id.in.(${validCustomerIds.join(',')})`);
+        if (relevantSaleIdsFileItems.length > 0) conditions.push(`id.in.(${relevantSaleIdsFileItems.join(',')})`);
+
+        if (conditions.length > 0) {
+            query = query.or(conditions.join(','));
+        } else {
+            // Search yielded no matches
+            return { sales: [], count: 0 };
+        }
+    }
+
+    query = query.order('created_at', { ascending: false })
+        .range(from, to);
+
+    const { data: sales, count, error } = await query;
+
+    // Also sign PoP URLs if they exist
+    const salesWithSignedUrls = await Promise.all((sales || []).map(async (sale) => {
+        if (!sale.pop_file_url) return sale;
+
+        // Extract path logic similar to invoices if needed, but assuming path stored directly
+        let path = sale.pop_file_url;
+        if (path.startsWith('http')) {
+            const parts = path.split('/proofs_of_payment/');
+            if (parts.length > 1) path = parts[1];
+        }
+
+        const { data } = await supabase.storage
+            .from('proofs_of_payment')
+            .createSignedUrl(path, 60 * 60);
+
+        return {
+            ...sale,
+            pop_file_url: data?.signedUrl || sale.pop_file_url
+        };
+    }));
+
+    if (error) {
+        console.error('Error fetching sales history:', error);
+        return { sales: [], count: 0 };
+    }
+
+    return { sales: salesWithSignedUrls, count };
 }

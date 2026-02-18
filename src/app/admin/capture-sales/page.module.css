@@ -1,0 +1,11 @@
+.container {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--foreground);
+}

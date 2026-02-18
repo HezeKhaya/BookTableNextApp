@@ -29,6 +29,15 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
                 <nav className={styles.nav}>
                     <Link
+                        href="/admin/capture-sales"
+                        className={`${styles.navItem} ${pathname === '/admin/capture-sales' ? styles.active : ''}`}
+                        onClick={onClose}
+                    >
+                        <ClipboardList size={20} />
+                        Capture Sales
+                    </Link>
+
+                    <Link
                         href="/admin/stock"
                         className={`${styles.navItem} ${pathname === '/admin/stock' ? styles.active : ''}`}
                         onClick={onClose}

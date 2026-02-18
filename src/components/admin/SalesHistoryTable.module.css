@@ -1,0 +1,207 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    flex: 1;
+    min-width: 250px;
+}
+
+.searchIcon {
+    color: var(--muted-foreground);
+    margin-right: 0.5rem;
+}
+
+.searchInput {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--foreground);
+    flex: 1;
+}
+
+.select,
+.dateInput {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--background);
+    color: var(--foreground);
+}
+
+.to {
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+}
+
+.tableWrapper {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+}
+
+.table th {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+    font-size: 0.95rem;
+    vertical-align: top;
+}
+
+.loadingCell,
+.emptyCell {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted-foreground);
+}
+
+.customerInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.custName {
+    font-weight: 500;
+}
+
+.custPhone {
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+}
+
+.itemsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.itemRow {
+    font-size: 0.9rem;
+}
+
+.qty {
+    color: var(--muted-foreground);
+    margin-right: 0.4rem;
+}
+
+.amount {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.CASH {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.EFT {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.statusBadge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.PAID {
+    background: rgba(16, 185, 129, 0.15);
+    /* Green tint */
+    color: #10b981;
+}
+
+.PENDING {
+    background: rgba(245, 158, 11, 0.15);
+    /* Amber tint */
+    color: #f59e0b;
+}
+
+.viewLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+.viewLink:hover {
+    text-decoration: underline;
+}
+
+.noPop {
+    color: var(--muted-foreground);
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.pageBtn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--foreground);
+}
+
+.pageBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pageInfo {
+    color: var(--muted-foreground);
+    font-size: 0.9rem;
+}
+
+/* Dark mode specific adjustments if needed, 
+   but variables should handle it */
