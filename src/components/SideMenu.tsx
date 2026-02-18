@@ -42,10 +42,14 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                         User Management
                     </div>
 
-                    <div className={`${styles.navItem} ${styles.disabled}`}>
+                    <Link
+                        href="/admin/record-keeping"
+                        className={`${styles.navItem} ${pathname.startsWith('/admin/record-keeping') ? styles.active : ''}`}
+                        onClick={onClose}
+                    >
                         <ClipboardList size={20} />
                         Record Keeping
-                    </div>
+                    </Link>
                 </nav>
             </div>
         </>
