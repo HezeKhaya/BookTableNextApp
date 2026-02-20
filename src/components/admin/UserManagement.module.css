@@ -1,0 +1,88 @@
+.wrapper {
+    background: transparent;
+    border-radius: 8px;
+    padding: 1rem 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    font-size: 1.2rem;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--card);
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.table th {
+    background-color: var(--secondary);
+    font-weight: 600;
+    color: var(--secondary-foreground);
+}
+
+.table td {
+    color: var(--foreground);
+    font-size: 0.95rem;
+}
+
+.nameCell {
+    font-weight: 500;
+}
+
+.roleSelect {
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.roleSelect:focus {
+    border-color: var(--ring);
+}
+
+.roleSelect:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: var(--muted);
+}
+
+.loadingCell,
+.emptyCell {
+    text-align: center;
+    padding: 40px !important;
+    color: var(--muted-foreground);
+}
+
+.loadingCell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}

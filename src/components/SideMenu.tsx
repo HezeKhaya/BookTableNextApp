@@ -46,10 +46,14 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                         Stock Management
                     </Link>
 
-                    <div className={`${styles.navItem} ${styles.disabled}`}>
+                    <Link
+                        href="/admin/users"
+                        className={`${styles.navItem} ${pathname.startsWith('/admin/users') ? styles.active : ''}`}
+                        onClick={onClose}
+                    >
                         <Users size={20} />
                         User Management
-                    </div>
+                    </Link>
 
                     <Link
                         href="/admin/record-keeping"

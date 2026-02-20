@@ -47,7 +47,7 @@ export async function signupAction(formData: FormData) {
                     email: email,
                     phone_number: phoneNumber,
                     password: hashedPassword,
-                    role_id: 3 // Default role
+                    role_id: 2 // Default role
                 }
             ])
             .select()
