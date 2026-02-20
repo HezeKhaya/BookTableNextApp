@@ -1,0 +1,231 @@
+.wrapper {
+    background: transparent;
+    border-radius: 8px;
+    padding: 1rem 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    font-size: 1.2rem;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+    opacity: 0.9;
+}
+
+.actionButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.table th {
+    background-color: var(--secondary);
+    font-weight: 600;
+    color: var(--secondary-foreground);
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: #e3f2fd;
+    color: #1976d2;
+}
+
+.amount {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.viewLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    color: var(--secondary-foreground);
+    background: var(--secondary);
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.viewLink:hover {
+    background: var(--muted);
+    color: var(--foreground);
+}
+
+.loadingCell,
+.emptyCell {
+    text-align: center;
+    padding: 40px !important;
+    color: var(--muted-foreground);
+}
+
+.loadingCell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: var(--background);
+    color: var(--foreground);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.modalHeader {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--foreground);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: var(--foreground);
+}
+
+.modalBody {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.bookList {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bookList th,
+.bookList td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+}
+
+.bookList th {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+.modalFooter {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.summaryCards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: var(--secondary);
+    padding: 15px 20px;
+    border-radius: 8px;
+    flex: 1;
+    border: 1px solid var(--border);
+}
+
+.cardLabel {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cardValue {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+}

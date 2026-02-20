@@ -402,5 +402,99 @@ export async function getSalesHistory(
         return { sales: [], count: 0 };
     }
 
+
     return { sales: salesWithSignedUrls, count };
+}
+
+// --- STOCK SNAPSHOTS ---
+
+export async function getStockSnapshots() {
+    const { data: snapshots, error } = await supabase
+        .from('stock_snapshots')
+        .select('*')
+        .order('snapshot_date', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching stock snapshots:', error);
+        return { snapshots: [] };
+    }
+
+    // Fetch user emails manually to avoid PostgREST join issues on auth schema
+    const userIds = Array.from(new Set((snapshots || []).map(s => s.created_by).filter(Boolean)));
+
+    let userMap: Record<string, string> = {};
+    if (userIds.length > 0) {
+        const { data: usersData, error: usersError } = await supabase
+            .from('users')
+            .select('id, first_name')
+            .in('id', userIds);
+
+        if (!usersError && usersData) {
+            userMap = usersData.reduce((acc, user) => {
+                acc[user.id] = user.first_name;
+                return acc;
+            }, {} as Record<string, string>);
+        }
+    }
+
+    const formattedSnapshots = (snapshots || []).map(s => ({
+        ...s,
+        created_by_user: { first_name: userMap[s.created_by] || 'Unknown' }
+    }));
+
+    return { snapshots: formattedSnapshots };
+}
+
+export async function createStockSnapshot(userId: string) {
+    if (!userId) {
+        return { error: 'User ID is required to create a snapshot.' };
+    }
+
+    // 1. Fetch current stock
+    const { data: books, error: booksError } = await supabase
+        .from('books')
+        .select('*');
+
+    if (booksError || !books) {
+        console.error('Error fetching books for snapshot:', booksError);
+        return { error: 'Failed to fetch current stock for snapshot.' };
+    }
+
+    // 2. Calculate totals
+    let totalBooksCount = 0;
+    let totalValue = 0;
+
+    const snapshotData = books.map(book => {
+        totalBooksCount += book.qty_in_stock;
+        totalValue += (book.price * book.qty_in_stock);
+
+        return {
+            id: book.id,
+            sku_number: book.sku_number,
+            title: book.title,
+            author: book.author,
+            qty_in_stock: book.qty_in_stock,
+            price: book.price
+        };
+    });
+
+    // 3. Create snapshot record
+    const { data: snapshot, error: snapshotError } = await supabase
+        .from('stock_snapshots')
+        .insert({
+            total_books_count: totalBooksCount,
+            total_value: totalValue,
+            created_by: userId,
+            data: snapshotData
+        })
+        .select()
+        .single();
+
+    if (snapshotError) {
+        console.error('Error creating stock snapshot:', snapshotError);
+        return { error: 'Failed to save stock snapshot.' };
+    }
+
+    revalidatePath('/admin/record-keeping');
+    return { success: true, snapshot };
 }

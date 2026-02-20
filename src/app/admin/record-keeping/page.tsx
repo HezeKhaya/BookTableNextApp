@@ -5,8 +5,7 @@ import { useState } from 'react';
 import styles from './page.module.css';
 import InvoiceManagement from '@/components/admin/InvoiceManagement';
 import SalesHistoryTable from '@/components/admin/SalesHistoryTable';
-// Future imports: StockSnapshots
-
+import StockSnapshotsTab from '@/components/admin/StockSnapshotsTab';
 export default function RecordKeepingPage() {
     const [activeTab, setActiveTab] = useState<'invoices' | 'history' | 'snapshots'>('invoices');
 
@@ -40,7 +39,7 @@ export default function RecordKeepingPage() {
                 <div className={styles.content}>
                     {activeTab === 'invoices' && <InvoiceManagement />}
                     {activeTab === 'history' && <SalesHistoryTable />}
-                    {activeTab === 'snapshots' && <div>Stock Snapshots (Coming Soon)</div>}
+                    {activeTab === 'snapshots' && <StockSnapshotsTab />}
                 </div>
             </div>
         </main>
