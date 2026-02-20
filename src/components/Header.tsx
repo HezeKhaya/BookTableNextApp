@@ -11,10 +11,12 @@ import SideMenu from './SideMenu';
 
 export default function Header({
     onSearch,
-    showSearch = true
+    showSearch = true,
+    showEarlyAccessBadge = false
 }: {
     onSearch?: (query: string) => void;
     showSearch?: boolean;
+    showEarlyAccessBadge?: boolean;
 }) {
     const { user, role, logout } = useAuth();
     const { count } = useCart();
@@ -58,6 +60,9 @@ export default function Header({
                         )}
                         <Link href="/" className={styles.logo}>
                             <span className={styles.logoText}>Book Table</span>
+                            {showEarlyAccessBadge && (
+                                <span className={styles.earlyAccessBadge}>EARLY ACCESS</span>
+                            )}
                         </Link>
                     </div>
 

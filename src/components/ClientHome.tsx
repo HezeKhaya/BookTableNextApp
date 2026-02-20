@@ -41,7 +41,9 @@ export default function ClientHome({ initialBooks }: ClientHomeProps) {
     };
 
     const filteredBooks = initialBooks.filter((book) => {
-        const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const lowerQuery = searchQuery.toLowerCase();
+        const matchesSearch = book.title.toLowerCase().includes(lowerQuery) || 
+                              book.author.toLowerCase().includes(lowerQuery);
 
         const topLevelCat = book.category ? getTopLevelCategory(book.category) : 'CH';
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(topLevelCat);
@@ -51,7 +53,7 @@ export default function ClientHome({ initialBooks }: ClientHomeProps) {
 
     return (
         <main className={styles.main}>
-            <Header onSearch={setSearchQuery} />
+            <Header onSearch={setSearchQuery} showEarlyAccessBadge={true} />
 
             <div className={`container ${styles.content}`}>
                 <section className={styles.hero}>
