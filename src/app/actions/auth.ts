@@ -1,7 +1,6 @@
 'use server';
 
-import { supabase } from '@/lib/supabaseClient';
-import bcrypt from 'bcryptjs';
+import { createClient } from '@/utils/supabase/server';
 import { User } from '@/types/database.types';
 
 export async function signupAction(formData: FormData) {
@@ -23,41 +22,44 @@ export async function signupAction(formData: FormData) {
     }
 
     try {
-        // 1. Check if user exists
-        const { data: existingUser } = await supabase
-            .from('users')
-            .select('id')
-            .eq('email', email)
-            .single();
-
-        if (existingUser) {
-            return { error: 'User with this email already exists' };
-        }
-
-        // 2. Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // 3. Create user
-        const { data: newUser, error: createError } = await supabase
-            .from('users')
-            .insert([
-                {
+        const supabase = await createClient();
+        
+        // 1. Check if user exists (Optional but good for UX if Supabase doesn't return a clear error)
+        // Note: Supabase auth.signUp handles duplicate emails with an obfuscated message by default if not configured securely, 
+        // but we'll let it handle it.
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
                     first_name: firstName,
                     last_name: lastName,
-                    email: email,
                     phone_number: phoneNumber,
-                    password: hashedPassword,
                     role_id: 2 // Default role
                 }
-            ])
-            .select()
-            .single();
+            }
+        });
 
-        if (createError || !newUser) {
-            return { error: 'Failed to create account: ' + createError?.message };
+        if (error) {
+            return { error: 'Failed to create account: ' + error.message };
         }
 
-        return { user: newUser as User };
+        if (!data.user) {
+            return { error: 'Failed to create account. User not returned.' };
+        }
+
+        // Return a constructed User object for the UI representation
+        // The actual database insert into the `users` table will be handled by the SQL trigger.
+        const newUser: User = {
+            id: data.user.id,
+            email: email,
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: phoneNumber,
+            role_id: 2
+        };
+
+        return { user: newUser };
     } catch (error: unknown) {
         if (error instanceof Error) {
             return { error: error.message };
@@ -75,29 +77,83 @@ export async function loginAction(formData: FormData) {
     }
 
     try {
-        // 1. Find user by email
-        const { data: user, error: fetchError } = await supabase
+        const supabase = await createClient();
+
+        // 1. Authenticate with Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) {
+            return { error: 'Supabase Auth Error: ' + error.message };
+        }
+
+        if (!data.user) {
+            return { error: 'Invalid email or password' };
+        }
+
+        // 2. Fetch the custom user profile to match the old return type `User`
+        // We need to fetch from `users` table because `auth.users` only contains auth data
+        const { data: userProfile, error: profileError } = await supabase
             .from('users')
             .select('*')
-            .eq('email', email)
+            .eq('id', data.user.id)
             .single();
 
-        if (fetchError || !user) {
-            return { error: 'Invalid email or password' };
+        if (profileError || !userProfile) {
+            return { error: `Profile Fetch Error: ${profileError?.message || 'User profile not found in database.'}` };
         }
 
-        // 2. Compare password
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            return { error: 'Invalid email or password' };
-        }
-
-        return { user: user as User };
+        return { user: userProfile as User };
     } catch (error: unknown) {
         if (error instanceof Error) {
             return { error: error.message };
         }
         return { error: 'An error occurred during login' };
+    }
+}
+
+export async function getClientProfile(userId: string) {
+    if (!userId) return { error: 'No user ID provided' };
+
+    try {
+        const supabase = await createClient();
+
+        // 1. Fetch User
+        const { data: userProfile, error: profileError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+        if (profileError || !userProfile) {
+            console.error('Failed to fetch user profile:', profileError);
+            return { error: 'User profile not found in database.' };
+        }
+
+        // 2. Fetch Role
+        let roleName = 'Member';
+        if (userProfile.role_id) {
+            const { data: roleData, error: roleError } = await supabase
+                .from('roles')
+                .select('name')
+                .eq('id', userProfile.role_id)
+                .single();
+
+            if (roleError || !roleData) {
+                console.error(`Error fetching role for ID ${userProfile.role_id}:`, roleError);
+                if (userProfile.role_id === 1) roleName = 'Member';
+                else if (userProfile.role_id === 2) roleName = 'Admin';
+                else if (userProfile.role_id === 3) roleName = 'System Admin';
+            } else {
+                roleName = roleData.name;
+            }
+        }
+
+        return { user: userProfile as User, roleName };
+    } catch (error: unknown) {
+        console.error('getClientProfile error:', error);
+        return { error: 'An unexpected error occurred.' };
     }
 }

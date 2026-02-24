@@ -1,9 +1,10 @@
 'use server';
 
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export async function getBooks() {
+    const supabase = await createClient();
     const { data: books, error } = await supabase
         .from('books')
         .select('*')
@@ -18,6 +19,7 @@ export async function getBooks() {
 }
 
 export async function getBookById(id: number) {
+    const supabase = await createClient();
     const { data: book, error } = await supabase
         .from('books')
         .select('*')
@@ -33,6 +35,7 @@ export async function getBookById(id: number) {
 }
 
 export async function updateStock(bookId: number, newQuantity: number) {
+    const supabase = await createClient();
     // Note: Since we are using custom auth without server-side sessions, 
     // we cannot strictly verify the user here without passing a token.
     // For this implementation, we are relying on the client-side Admin check.
@@ -53,6 +56,7 @@ export async function updateStock(bookId: number, newQuantity: number) {
 }
 
 export async function deleteBook(bookId: number) {
+    const supabase = await createClient();
     const { error } = await supabase
         .from('books')
         .delete()
@@ -68,6 +72,7 @@ export async function deleteBook(bookId: number) {
 }
 
 export async function addBook(formData: FormData) {
+    const supabase = await createClient();
     // Extract data
     const title = formData.get('title') as string;
     const author = formData.get('author') as string;

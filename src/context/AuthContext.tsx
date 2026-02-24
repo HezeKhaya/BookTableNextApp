@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import { supabase } from '@/lib/supabaseClient';
 import { User, Role } from '@/types/database.types';
+import { getClientProfile } from '@/app/actions/auth';
 
 interface AuthContextType {
     user: User | null;
@@ -29,33 +29,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const fetchUser = useCallback(async (userId: string) => {
         try {
-            // Fetch User
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', userId)
-                .single();
+            const res = await getClientProfile(userId);
 
-            if (userError || !userData) {
-                console.error('Error fetching user:', userError);
+            if (res.error || !res.user) {
+                console.error('Error fetching user:', res.error);
                 logout(); // Invalid session
                 return;
             }
 
-            const currentUser = userData as User;
-            setUser(currentUser);
-
-            // Fetch Role
-            if (currentUser.role_id) {
-                const { data: roleData } = await supabase
-                    .from('roles')
-                    .select('name')
-                    .eq('id', currentUser.role_id)
-                    .single();
-
-                if (roleData) {
-                    setRole((roleData as Role).name);
-                }
+            setUser(res.user);
+            
+            if (res.roleName) {
+                setRole(res.roleName);
             }
         } catch (error) {
             console.error('Auth check failed', error);

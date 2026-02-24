@@ -1,11 +1,12 @@
 'use server';
 
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 // --- INVOICES ---
 
 export async function getInvoices() {
+    const supabase = await createClient();
     const { data: invoices, error } = await supabase
         .from('invoices')
         .select('*')
@@ -41,6 +42,7 @@ export async function getInvoices() {
 }
 
 export async function uploadInvoice(formData: FormData) {
+    const supabase = await createClient();
     const file = formData.get('file') as File;
     const supplierName = formData.get('supplierName') as string;
     const invoiceDate = formData.get('invoiceDate') as string;
@@ -86,6 +88,7 @@ export async function uploadInvoice(formData: FormData) {
 }
 
 export async function deleteInvoice(id: string, fileUrl: string) {
+    const supabase = await createClient();
     // 1. Delete from DB
     const { error: dbError } = await supabase
         .from('invoices')
@@ -111,6 +114,7 @@ export async function deleteInvoice(id: string, fileUrl: string) {
 // --- SALES & CUSTOMERS ---
 
 export async function searchCustomers(query: string) {
+    const supabase = await createClient();
     if (!query) return { customers: [] };
 
     const { data: customers, error } = await supabase
@@ -128,6 +132,7 @@ export async function searchCustomers(query: string) {
 }
 
 export async function createCustomer(data: { firstName: string; lastName: string; phone: string; email?: string }) {
+    const supabase = await createClient();
     const { data: customer, error } = await supabase
         .from('customers')
         .insert({
@@ -148,6 +153,7 @@ export async function createCustomer(data: { firstName: string; lastName: string
 }
 
 export async function searchBooks(query: string) {
+    const supabase = await createClient();
     if (!query) return { books: [] };
 
     const { data: books, error } = await supabase
@@ -179,6 +185,7 @@ export async function recordSale(saleData: {
     popFile?: FormData;
     adminNotes?: string;
 }) {
+    const supabase = await createClient();
     // 1. Verify Payment Status logic
     if (saleData.paymentType === 'EFT' && saleData.paymentStatus === 'PAID') {
         // In strict mode, we'd require PoP here. 
@@ -228,6 +235,7 @@ export async function recordSale(saleData: {
 }
 
 export async function getPendingSales() {
+    const supabase = await createClient();
     // Fetch sales that are PENDING
     const { data: sales, error } = await supabase
         .from('sales')
@@ -248,6 +256,7 @@ export async function getPendingSales() {
 }
 
 export async function uploadProofOfPayment(formData: FormData) {
+    const supabase = await createClient();
     const saleId = formData.get('saleId') as string;
     const file = formData.get('file') as File;
 
@@ -287,9 +296,59 @@ export async function uploadProofOfPayment(formData: FormData) {
     return { success: true };
 }
 
+export async function updateSaleStatus(saleId: string, newStatus: 'PENDING' | 'PAID' | 'ORDERED', paymentType?: 'CASH' | 'EFT') {
+    const supabase = await createClient();
+    if (!saleId) return { error: 'Missing sale ID' };
+
+    // Fetch the sale before updating to check for automatic ORDER progression
+    const { data: sale } = await supabase
+        .from('sales')
+        .select('payment_status, admin_notes')
+        .eq('id', saleId)
+        .single();
+        
+    // If moving out of ORDERED status, apply user-defined defaults for payment type
+    let finalPaymentType = paymentType;
+    if (sale && sale.payment_status === 'ORDERED' && newStatus !== 'ORDERED') {
+        if (newStatus === 'PAID' && !paymentType) finalPaymentType = 'CASH';
+        if (newStatus === 'PENDING' && !paymentType) finalPaymentType = 'EFT';
+    }
+
+    const updateData: any = { payment_status: newStatus };
+    if (finalPaymentType) {
+        updateData.payment_type = finalPaymentType;
+    }
+
+    const { error: updateError } = await supabase
+        .from('sales')
+        .update(updateData)
+        .eq('id', saleId);
+
+    if (updateError) {
+        console.error('Error updating sale status:', updateError);
+        return { error: 'Failed to update sale status' };
+    }
+
+    // Automatically trigger COLLECTED if this sale is moving out of ORDERED status
+    if (sale && sale.payment_status === 'ORDERED' && newStatus !== 'ORDERED') {
+        const match = sale.admin_notes?.match(/Linked to Order ([a-f0-9\-]+)/);
+        if (match && match[1]) {
+            const orderId = match[1];
+            await supabase
+                .from('orders')
+                .update({ status: 'COLLECTED' })
+                .eq('id', orderId);
+            revalidatePath('/admin/capture-orders');
+        }
+    }
+
+    revalidatePath('/admin/record-keeping');
+    return { success: true };
+}
+
 export type SalesFilter = {
     search?: string;
-    paymentStatus?: 'PAID' | 'PENDING' | 'ALL';
+    paymentStatus?: 'PAID' | 'PENDING' | 'ORDERED' | 'ALL';
     paymentType?: 'CASH' | 'EFT' | 'ALL';
     startDate?: string;
     endDate?: string;
@@ -300,6 +359,7 @@ export async function getSalesHistory(
     pageSize: number = 10,
     filters: SalesFilter = {}
 ) {
+    const supabase = await createClient();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
@@ -409,6 +469,7 @@ export async function getSalesHistory(
 // --- STOCK SNAPSHOTS ---
 
 export async function getStockSnapshots() {
+    const supabase = await createClient();
     const { data: snapshots, error } = await supabase
         .from('stock_snapshots')
         .select('*')
@@ -446,6 +507,7 @@ export async function getStockSnapshots() {
 }
 
 export async function createStockSnapshot(userId: string) {
+    const supabase = await createClient();
     if (!userId) {
         return { error: 'User ID is required to create a snapshot.' };
     }

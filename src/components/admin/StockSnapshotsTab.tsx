@@ -6,7 +6,6 @@ import { Loader2, Camera, Eye, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import styles from './StockSnapshotsTab.module.css';
 
-import { supabase } from '@/lib/supabaseClient';
 
 type Snapshot = {
     id: string;

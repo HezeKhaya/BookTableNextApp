@@ -1,6 +1,6 @@
 'use server';
 
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 export type UserWithRole = {
@@ -14,6 +14,7 @@ export type UserWithRole = {
 };
 
 export async function getUsers() {
+    const supabase = await createClient();
     // 1. Fetch Users
     const { data: users, error: usersError } = await supabase
         .from('users')
@@ -54,6 +55,7 @@ export async function getUsers() {
 }
 
 export async function updateUserRole(userIdToEdit: string, newRoleId: number, adminUserId: string) {
+    const supabase = await createClient();
     if (!adminUserId || !userIdToEdit) {
         return { error: 'Invalid user context' };
     }

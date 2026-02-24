@@ -1,6 +1,6 @@
 'use server';
 
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
@@ -11,6 +11,7 @@ import { cookies } from 'next/headers';
 // 3. If no cookie, return null (we'll handle creation on add).
 
 export async function getCart(userId?: string) {
+    const supabase = await createClient();
     let cartId: string | null = null;
 
     if (userId) {
@@ -80,6 +81,7 @@ export async function getCart(userId?: string) {
 }
 
 export async function addToCart(bookId: number, quantity: number = 1, userId?: string) {
+    const supabase = await createClient();
     let cartId: string | null = null;
     const cookieStore = await cookies();
 
@@ -172,6 +174,7 @@ export async function addToCart(bookId: number, quantity: number = 1, userId?: s
 }
 
 export async function removeFromCart(itemId: string) {
+    const supabase = await createClient();
     const { error } = await supabase
         .from('cart_items')
         .delete()
@@ -187,6 +190,7 @@ export async function removeFromCart(itemId: string) {
 }
 
 export async function updateCartItemQuantity(itemId: string, quantity: number) {
+    const supabase = await createClient();
     if (quantity <= 0) {
         return removeFromCart(itemId);
     }
@@ -203,6 +207,7 @@ export async function updateCartItemQuantity(itemId: string, quantity: number) {
 }
 
 export async function mergeGuestCart(guestCartId: string, userId: string) {
+    const supabase = await createClient();
     // 1. Get User Cart
     let userCartId: string | null = null;
     const { data: userCart } = await supabase

@@ -1,10 +1,11 @@
-import { supabase } from '@/lib/supabaseClient';
+import { createClient } from '@/utils/supabase/server';
 import { Book } from '@/types/database.types';
 import ClientHome from '@/components/ClientHome';
 
 export const dynamic = 'force-dynamic';
 
 async function getBooks() {
+  const supabase = await createClient();
   const { data: books, error } = await supabase
     .from('books')
     .select('*')

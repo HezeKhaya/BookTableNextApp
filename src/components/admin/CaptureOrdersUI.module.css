@@ -1,0 +1,429 @@
+.wrapper {
+    background-color: transparent;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.primaryBtn, .primaryBtnFull, .successBtnFull {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.primaryBtn:hover, .primaryBtnFull:hover {
+    opacity: 0.9;
+}
+.primaryBtn:active, .primaryBtnFull:active, .successBtnFull:active {
+    transform: scale(0.98);
+}
+.primaryBtn:disabled, .primaryBtnFull:disabled, .successBtnFull:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.primaryBtnFull {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.successBtnFull {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #38a169;
+}
+.successBtnFull:hover {
+    background-color: #2f855a;
+}
+
+.loadingWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 0;
+    color: var(--muted-foreground);
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted-foreground);
+    background-color: var(--background);
+    border-radius: 8px;
+    border: 1px dashed var(--border);
+}
+
+.tableResponsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.table th, .table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    color: var(--foreground);
+}
+
+.table th {
+    background-color: var(--secondary);
+    font-weight: 600;
+    color: var(--secondary-foreground);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.subtitleText {
+    font-size: 0.85rem;
+    color: var(--muted-foreground);
+    margin-top: 4px;
+}
+
+.itemList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.itemRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.qtyBadge {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.statusBadge.captured {
+    background-color: #ebf8ff;
+    color: #3182ce;
+}
+.statusBadge.ready {
+    background-color: #feebc8;
+    color: #dd6b20;
+}
+.statusBadge.collected {
+    background-color: #c6f6d5;
+    color: #38a169;
+}
+
+.invoiceLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.invoiceLink:hover {
+    text-decoration: underline;
+}
+
+.uploadBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: opacity 0.2s;
+}
+.uploadBtn:hover {
+    opacity: 0.8;
+}
+
+.statusSelect {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--foreground);
+    font-size: 0.85rem;
+    outline: none;
+}
+.statusSelect:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary);
+}
+
+.actionBtnDelete {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ef4444;
+}
+.actionBtnDelete:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+
+/* MODAL CSS */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modalContent {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--foreground);
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+    padding: 4px;
+    border-radius: 4px;
+}
+.closeBtn:hover {
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+.modalBody {
+    padding: 24px;
+}
+
+.stepContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    background-color: var(--background);
+    color: var(--foreground);
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(205, 127, 50, 0.2);
+}
+
+.bookSummary {
+    display: flex;
+    gap: 16px;
+    background-color: var(--secondary);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.bookCover {
+    width: 80px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.bookMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bookMeta h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--foreground);
+}
+
+.author {
+    color: var(--muted-foreground);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.price {
+    font-weight: 600;
+    color: #38a169;
+    margin: 8px 0 0 0;
+}
+
+.tag {
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background-color: var(--secondary);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--border);
+    margin: 8px 0;
+}
+
+.customerSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid var(--border);
+}
+
+.tab, .activeTab {
+    background: none;
+    border: none;
+    padding: 8px 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--muted-foreground);
+    position: relative;
+    top: 2px;
+}
+
+.activeTab {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+}
+
+.tab:hover {
+    color: var(--foreground);
+}
+
+.newCustomerForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.formGroup label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--foreground);
+}

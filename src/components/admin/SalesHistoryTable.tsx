@@ -11,7 +11,7 @@ type Sale = {
     created_at: string;
     total_amount: number;
     payment_type: 'CASH' | 'EFT';
-    payment_status: 'PAID' | 'PENDING';
+    payment_status: 'PAID' | 'PENDING' | 'ORDERED';
     pop_file_url?: string;
     customers: {
         first_name: string;
@@ -36,7 +36,7 @@ export default function SalesHistoryTable() {
 
     // Filters
     const [search, setSearch] = useState('');
-    const [status, setStatus] = useState<'ALL' | 'PAID' | 'PENDING'>('ALL');
+    const [status, setStatus] = useState<'ALL' | 'PAID' | 'PENDING' | 'ORDERED'>('ALL');
     const [type, setType] = useState<'ALL' | 'CASH' | 'EFT'>('ALL');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -70,6 +70,26 @@ export default function SalesHistoryTable() {
         setLoading(false);
     };
 
+    const handleStatusChange = async (saleId: string, currentType: 'CASH' | 'EFT', newStatus: 'PAID' | 'PENDING') => {
+        // Validation per user rules
+        if (currentType === 'EFT' && newStatus === 'PAID') {
+            alert('Cannot mark an EFT sale as PAID from here. Please upload a Proof of Payment (Invoice/PoP).');
+            return;
+        }
+
+        const confirmMsg = `Are you sure you want to change the status to ${newStatus}?`;
+        if (!confirm(confirmMsg)) return;
+
+        const { updateSaleStatus } = await import('@/app/actions/record-keeping');
+        const { success, error } = await updateSaleStatus(saleId, newStatus);
+        
+        if (success) {
+            fetchSales();
+        } else {
+            alert(error || 'Failed to update status');
+        }
+    };
+
     const totalPages = Math.ceil(count / pageSize);
 
     return (
@@ -95,6 +115,7 @@ export default function SalesHistoryTable() {
                     <option value="ALL">All Status</option>
                     <option value="PAID">Paid</option>
                     <option value="PENDING">Pending</option>
+                    <option value="ORDERED">Ordered</option>
                 </select>
 
                 <select
@@ -178,9 +199,21 @@ export default function SalesHistoryTable() {
                                         </span>
                                     </td>
                                     <td>
-                                        <span className={`${styles.statusBadge} ${styles[sale.payment_status]}`}>
-                                            {sale.payment_status}
-                                        </span>
+                                        {sale.payment_status === 'ORDERED' ? (
+                                            <select 
+                                                className={styles.statusSelect}
+                                                value="ORDERED"
+                                                onChange={(e) => handleStatusChange(sale.id, sale.payment_type, e.target.value as any)}
+                                            >
+                                                <option value="ORDERED" disabled>ORDERED</option>
+                                                <option value="PENDING">Mark PENDING</option>
+                                                <option value="PAID">Mark PAID</option>
+                                            </select>
+                                        ) : (
+                                            <span className={`${styles.statusBadge} ${styles[sale.payment_status]}`}>
+                                                {sale.payment_status}
+                                            </span>
+                                        )}
                                     </td>
                                     <td>
                                         {sale.pop_file_url ? (
