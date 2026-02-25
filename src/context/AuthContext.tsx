@@ -22,7 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     // Define logout first so it can be used in fetchUser
-    const logout = useCallback(() => {
+    const logout = useCallback(async () => {
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        
         localStorage.removeItem('bt_user_id');
         setUser(null);
         setRole(null);
