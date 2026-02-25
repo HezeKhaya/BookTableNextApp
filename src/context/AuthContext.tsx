@@ -23,12 +23,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Define logout first so it can be used in fetchUser
     const logout = useCallback(async () => {
-        const supabase = createClient();
-        await supabase.auth.signOut();
-        
+        // Prevent recursive logout loops by checking local state
+        if (!localStorage.getItem('bt_user_id')) return;
+
         localStorage.removeItem('bt_user_id');
         setUser(null);
         setRole(null);
+
+        const supabase = createClient();
+        await supabase.auth.signOut();
     }, []);
 
     const fetchUser = useCallback(async (userId: string) => {

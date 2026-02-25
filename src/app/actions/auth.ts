@@ -120,15 +120,15 @@ export async function getClientProfile(userId: string) {
     try {
         const supabase = await createClient();
 
-        // 1. Fetch User
+        // 1. Fetch User (maybe missing if trigger failed or Google Auth hasn't populated it yet)
         const { data: userProfile, error: profileError } = await supabase
             .from('users')
             .select('*')
             .eq('id', userId)
-            .single();
+            .maybeSingle();
 
         if (profileError || !userProfile) {
-            console.error('Failed to fetch user profile:', profileError);
+            console.error('Failed to fetch user profile (might be a new Google Auth user):', profileError);
             return { error: 'User profile not found in database.' };
         }
 
@@ -139,7 +139,7 @@ export async function getClientProfile(userId: string) {
                 .from('roles')
                 .select('name')
                 .eq('id', userProfile.role_id)
-                .single();
+                .maybeSingle();
 
             if (roleError || !roleData) {
                 console.error(`Error fetching role for ID ${userProfile.role_id}:`, roleError);
