@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { User, Role } from '@/types/database.types';
 import { getClientProfile } from '@/app/actions/auth';
+import { createClient } from '@/utils/supabase/client';
 
 interface AuthContextType {
     user: User | null;
@@ -50,14 +51,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, [logout]); // Added logout to dependencies as it's called inside fetchUser
 
     useEffect(() => {
-        // Check local storage for persisted session
-        const storedUserId = localStorage.getItem('bt_user_id');
-        if (storedUserId) {
-            fetchUser(storedUserId);
-        } else {
-            setLoading(false);
-        }
-    }, [fetchUser]);
+        const supabase = createClient();
+        
+        // 1. Check for active Supabase session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user) {
+                // Supabase session exists (e.g., from OAuth redirect or existing session)
+                localStorage.setItem('bt_user_id', session.user.id);
+                fetchUser(session.user.id);
+            } else {
+                // 2. Fallback to localStorage if no active Supabase session found
+                const storedUserId = localStorage.getItem('bt_user_id');
+                if (storedUserId) {
+                    fetchUser(storedUserId);
+                } else {
+                    setLoading(false);
+                }
+            }
+        });
+
+        // 3. Listen to Auth State Changes (crucial for OAuth redirects)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (event, session) => {
+                if (session?.user) {
+                    localStorage.setItem('bt_user_id', session.user.id);
+                    fetchUser(session.user.id);
+                } else if (event === 'SIGNED_OUT') {
+                    logout();
+                }
+            }
+        );
+
+        return () => {
+             subscription.unsubscribe();
+        };
+    }, [fetchUser, logout]);
 
     const login = async (userId: string) => {
         setLoading(true);
