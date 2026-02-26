@@ -3,7 +3,16 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function GET(request: Request) {
     const requestUrl = new URL(request.url);
+    console.log('--- AUTH CALLBACK HIT ---');
+    console.log('URL:', requestUrl.toString());
+    
     const code = requestUrl.searchParams.get('code');
+    const errorParam = requestUrl.searchParams.get('error');
+    const errorDescriptionParam = requestUrl.searchParams.get('error_description');
+
+    if (errorParam || errorDescriptionParam) {
+        console.error('Supabase OAuth Error:', errorParam, errorDescriptionParam);
+    }
     const next = requestUrl.searchParams.get('next') ?? '/';
 
     if (code) {
@@ -41,6 +50,7 @@ export async function GET(request: Request) {
                     email: user.email,
                     first_name: firstName,
                     last_name: lastName,
+                    phone_number: '0000000000', // Dummy phone number
                     role_id: 2, // Default role
                     password: 'google-oauth-managed', // Dummy password
                 });
