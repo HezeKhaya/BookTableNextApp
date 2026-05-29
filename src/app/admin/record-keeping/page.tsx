@@ -4,10 +4,9 @@ import Header from '@/components/Header';
 import { useState } from 'react';
 import styles from './page.module.css';
 import InvoiceManagement from '@/components/admin/InvoiceManagement';
-import SalesHistoryTable from '@/components/admin/SalesHistoryTable';
 import StockSnapshotsTab from '@/components/admin/StockSnapshotsTab';
 export default function RecordKeepingPage() {
-    const [activeTab, setActiveTab] = useState<'invoices' | 'history' | 'snapshots'>('invoices');
+    const [activeTab, setActiveTab] = useState<'invoices' | 'snapshots'>('invoices');
 
     return (
         <main>
@@ -23,12 +22,6 @@ export default function RecordKeepingPage() {
                         Supplier Invoices
                     </button>
                     <button
-                        className={`${styles.tab} ${activeTab === 'history' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('history')}
-                    >
-                        Sales History
-                    </button>
-                    <button
                         className={`${styles.tab} ${activeTab === 'snapshots' ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab('snapshots')}
                     >
@@ -38,7 +31,6 @@ export default function RecordKeepingPage() {
 
                 <div className={styles.content}>
                     {activeTab === 'invoices' && <InvoiceManagement />}
-                    {activeTab === 'history' && <SalesHistoryTable />}
                     {activeTab === 'snapshots' && <StockSnapshotsTab />}
                 </div>
             </div>

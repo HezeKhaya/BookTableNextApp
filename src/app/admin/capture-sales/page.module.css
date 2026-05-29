@@ -9,3 +9,35 @@
     margin-bottom: 2rem;
     color: var(--foreground);
 }
+
+.tabs {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: var(--foreground);
+}
+
+.activeTab {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 500;
+}
+
+.content {
+    min-height: 400px;
+}
