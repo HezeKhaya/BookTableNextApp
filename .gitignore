@@ -42,3 +42,10 @@ next-env.d.ts
 
 # database scripts
 src/db/
+src/docs/BookTable/.obsidian/appearance.json
+src/docs/BookTable/.obsidian/core-plugins.json
+.gitignore
+.gitignore
+src/docs/BookTable/.obsidian/graph.json
+src/docs/BookTable/.obsidian/workspace.json
+src/docs/BookTable/.obsidian/app.json
