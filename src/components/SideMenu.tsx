@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { X, Package, Users, ClipboardList, Banknote, Truck } from 'lucide-react';
+import { X, Package, Users, ClipboardList, Banknote, Truck, BookOpen } from 'lucide-react';
 import styles from './SideMenu.module.css';
 
 interface SideMenuProps {
@@ -71,6 +71,15 @@ export default function SideMenu({ isOpen, onClose }: SideMenuProps) {
                     >
                         <ClipboardList size={20} />
                         Record Keeping
+                    </Link>
+
+                    <Link
+                        href="/admin/docs"
+                        className={`${styles.navItem} ${pathname.startsWith('/admin/docs') ? styles.active : ''}`}
+                        onClick={onClose}
+                    >
+                        <BookOpen size={20} />
+                        Documentation
                     </Link>
                 </nav>
             </div>
