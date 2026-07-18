@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getSalesHistory, SalesFilter } from '@/app/actions/record-keeping';
-import { Search, Loader2, FileText, ChevronLeft, ChevronRight, Eye, Pencil, Trash2 } from 'lucide-react';
+import { Search, Loader2, FileText, ChevronLeft, ChevronRight, Eye, Pencil, Trash2, Check, X } from 'lucide-react';
 import styles from './SalesHistoryTable.module.css';
 
 // Define types based on action response
@@ -322,41 +322,45 @@ export default function SalesHistoryTable() {
                                         )}
                                     </td>
                                     <td>
-                                        {editingSaleId === sale.id ? (
-                                            <div style={{ display: 'flex', gap: '4px', flexDirection: 'column' }}>
-                                                <button 
-                                                    onClick={() => handleSaveEdit(sale)} 
-                                                    disabled={savingSaleId === sale.id}
-                                                    className={styles.saveBtn}
-                                                >
-                                                    {savingSaleId === sale.id ? 'Saving...' : 'Save'}
-                                                </button>
-                                                <button 
-                                                    onClick={handleCancelEdit} 
-                                                    disabled={savingSaleId === sale.id}
-                                                    className={styles.cancelBtn}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                                <button 
-                                                    onClick={() => handleEditStart(sale)}
-                                                    className={styles.iconBtn}
-                                                    title="Edit Sale"
-                                                >
-                                                    <Pencil size={18} />
-                                                </button>
-                                                <button 
-                                                    onClick={() => handleDelete(sale.id)}
-                                                    className={`${styles.iconBtn} ${styles.dangerBtn}`}
-                                                    title="Delete Sale"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        )}
+                                        <div className={styles.actions}>
+                                            {editingSaleId === sale.id ? (
+                                                <>
+                                                    <button 
+                                                        onClick={() => handleSaveEdit(sale)} 
+                                                        disabled={savingSaleId === sale.id}
+                                                        className={styles.actionBtnSave}
+                                                        title="Save"
+                                                    >
+                                                        {savingSaleId === sale.id ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                                                    </button>
+                                                    <button 
+                                                        onClick={handleCancelEdit} 
+                                                        disabled={savingSaleId === sale.id}
+                                                        className={styles.actionBtnCancel}
+                                                        title="Cancel"
+                                                    >
+                                                        <X size={18} />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button 
+                                                        onClick={() => handleEditStart(sale)}
+                                                        className={styles.actionBtnEdit}
+                                                        title="Edit Sale"
+                                                    >
+                                                        <Pencil size={18} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDelete(sale.id)}
+                                                        className={styles.actionBtnDelete}
+                                                        title="Delete Sale"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))
