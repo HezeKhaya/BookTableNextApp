@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getSalesHistory, SalesFilter } from '@/app/actions/record-keeping';
-import { Search, Loader2, FileText, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { Search, Loader2, FileText, ChevronLeft, ChevronRight, Eye, Pencil, Trash2 } from 'lucide-react';
 import styles from './SalesHistoryTable.module.css';
 
 // Define types based on action response
@@ -135,6 +135,21 @@ export default function SalesHistoryTable() {
         setEditQuantities({});
     };
 
+    const handleDelete = async (saleId: string) => {
+        if (!confirm('Are you sure you want to delete this sale? This will restore the stock for all items in the sale and cannot be undone.')) {
+            return;
+        }
+
+        const { deleteSale } = await import('@/app/actions/record-keeping');
+        const { success, error } = await deleteSale(saleId);
+
+        if (success) {
+            fetchSales();
+        } else {
+            alert(error || 'Failed to delete sale');
+        }
+    };
+
     const totalPages = Math.ceil(count / pageSize);
 
     return (
@@ -236,7 +251,7 @@ export default function SalesHistoryTable() {
                                                         <input 
                                                             type="number" 
                                                             min="1"
-                                                            style={{ width: '40px', padding: '0.1rem', marginRight: '4px', border: '1px solid #ccc', borderRadius: '4px' }}
+                                                            className={styles.qtyInput}
                                                             value={editQuantities[item.id] || ''}
                                                             onChange={(e) => setEditQuantities(prev => ({ ...prev, [item.id]: parseInt(e.target.value) || 1 }))}
                                                         />
@@ -260,7 +275,7 @@ export default function SalesHistoryTable() {
                                             <select 
                                                 value={editPaymentType} 
                                                 onChange={(e) => setEditPaymentType(e.target.value as any)}
-                                                style={{ padding: '0.2rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                                                className={styles.typeSelect}
                                             >
                                                 <option value="CASH">CASH</option>
                                                 <option value="EFT">EFT</option>
@@ -312,25 +327,35 @@ export default function SalesHistoryTable() {
                                                 <button 
                                                     onClick={() => handleSaveEdit(sale)} 
                                                     disabled={savingSaleId === sale.id}
-                                                    style={{ padding: '0.25rem 0.5rem', cursor: 'pointer', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem' }}
+                                                    className={styles.saveBtn}
                                                 >
                                                     {savingSaleId === sale.id ? 'Saving...' : 'Save'}
                                                 </button>
                                                 <button 
                                                     onClick={handleCancelEdit} 
                                                     disabled={savingSaleId === sale.id}
-                                                    style={{ padding: '0.25rem 0.5rem', cursor: 'pointer', background: '#ccc', color: '#333', border: 'none', borderRadius: '4px', fontSize: '0.8rem' }}
+                                                    className={styles.cancelBtn}
                                                 >
                                                     Cancel
                                                 </button>
                                             </div>
                                         ) : (
-                                            <button 
-                                                onClick={() => handleEditStart(sale)}
-                                                style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px' }}
-                                            >
-                                                Edit
-                                            </button>
+                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                <button 
+                                                    onClick={() => handleEditStart(sale)}
+                                                    className={styles.iconBtn}
+                                                    title="Edit Sale"
+                                                >
+                                                    <Pencil size={18} />
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleDelete(sale.id)}
+                                                    className={`${styles.iconBtn} ${styles.dangerBtn}`}
+                                                    title="Delete Sale"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
                                         )}
                                     </td>
                                 </tr>

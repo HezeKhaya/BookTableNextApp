@@ -205,3 +205,82 @@
 
 /* Dark mode specific adjustments if needed, 
    but variables should handle it */
+
+/* Inline Edit Inputs */
+.qtyInput {
+    width: 50px;
+    padding: 0.2rem 0.4rem;
+    margin-right: 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.9rem;
+}
+
+.typeSelect {
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 0.9rem;
+}
+
+/* Actions Buttons */
+.saveBtn, .cancelBtn {
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.saveBtn {
+    background: var(--primary);
+    color: var(--primary-foreground, #fff);
+}
+
+.saveBtn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
+.saveBtn:disabled, .cancelBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancelBtn {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    border: 1px solid var(--border);
+}
+
+.cancelBtn:hover:not(:disabled) {
+    opacity: 0.8;
+}
+
+.iconBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted-foreground);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+    background: var(--secondary);
+    color: var(--foreground);
+}
+
+.dangerBtn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444; /* red-500 */
+}

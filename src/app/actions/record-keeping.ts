@@ -550,6 +550,59 @@ export async function updateSaleDetails(
     return { success: true };
 }
 
+export async function deleteSale(saleId: string) {
+    const supabase = await createClient();
+
+    // 1. Fetch sale items to restore stock
+    const { data: items, error: fetchError } = await supabase
+        .from('sale_items')
+        .select('book_id, quantity')
+        .eq('sale_id', saleId);
+
+    if (fetchError) {
+        console.error('Error fetching sale items for deletion:', fetchError);
+        return { error: 'Failed to fetch sale details before deletion' };
+    }
+
+    // 2. Restore stock for each item
+    if (items) {
+        for (const item of items) {
+            if (item.book_id && item.quantity > 0) {
+                const { data: book } = await supabase
+                    .from('books')
+                    .select('qty_in_stock')
+                    .eq('id', item.book_id)
+                    .single();
+                
+                if (book) {
+                    const newStock = book.qty_in_stock + item.quantity;
+                    await supabase
+                        .from('books')
+                        .update({ qty_in_stock: newStock })
+                        .eq('id', item.book_id);
+                }
+            }
+        }
+    }
+
+    // 3. Delete sale items (if not handled by cascade)
+    await supabase.from('sale_items').delete().eq('sale_id', saleId);
+
+    // 4. Delete the sale
+    const { error: deleteError } = await supabase
+        .from('sales')
+        .delete()
+        .eq('id', saleId);
+
+    if (deleteError) {
+        console.error('Error deleting sale:', deleteError);
+        return { error: 'Failed to delete sale' };
+    }
+
+    revalidatePath('/admin/record-keeping');
+    return { success: true };
+}
+
 // --- STOCK SNAPSHOTS ---
 
 export async function getStockSnapshots() {
