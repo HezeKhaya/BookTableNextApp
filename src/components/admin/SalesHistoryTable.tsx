@@ -19,6 +19,8 @@ type Sale = {
         phone_number: string;
     } | null;
     sale_items: {
+        id: string;
+        book_id: number;
         quantity: number;
         price_at_sale: number;
         books: {
@@ -40,6 +42,12 @@ export default function SalesHistoryTable() {
     const [type, setType] = useState<'ALL' | 'CASH' | 'EFT'>('ALL');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+
+    // Editing State
+    const [editingSaleId, setEditingSaleId] = useState<string | null>(null);
+    const [editPaymentType, setEditPaymentType] = useState<'CASH' | 'EFT'>('CASH');
+    const [editQuantities, setEditQuantities] = useState<Record<string, number>>({});
+    const [savingSaleId, setSavingSaleId] = useState<string | null>(null);
 
     useEffect(() => {
         fetchSales();
@@ -88,6 +96,43 @@ export default function SalesHistoryTable() {
         } else {
             alert(error || 'Failed to update status');
         }
+    };
+
+    const handleEditStart = (sale: Sale) => {
+        setEditingSaleId(sale.id);
+        setEditPaymentType(sale.payment_type);
+        const initialQs: Record<string, number> = {};
+        sale.sale_items.forEach(item => {
+            initialQs[item.id] = item.quantity;
+        });
+        setEditQuantities(initialQs);
+    };
+
+    const handleSaveEdit = async (sale: Sale) => {
+        setSavingSaleId(sale.id);
+        const { updateSaleDetails } = await import('@/app/actions/record-keeping');
+        
+        const itemsToUpdate = sale.sale_items.map(item => ({
+            id: item.id,
+            book_id: item.book_id,
+            quantity: editQuantities[item.id] || item.quantity,
+            price_at_sale: item.price_at_sale
+        }));
+
+        const { success, error } = await updateSaleDetails(sale.id, editPaymentType, itemsToUpdate);
+
+        if (success) {
+            setEditingSaleId(null);
+            fetchSales();
+        } else {
+            alert(error || 'Failed to update sale details');
+        }
+        setSavingSaleId(null);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingSaleId(null);
+        setEditQuantities({});
     };
 
     const totalPages = Math.ceil(count / pageSize);
@@ -155,18 +200,19 @@ export default function SalesHistoryTable() {
                             <th>Type</th>
                             <th>Status</th>
                             <th>Proof</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan={7} className={styles.loadingCell}>
+                                <td colSpan={8} className={styles.loadingCell}>
                                     <Loader2 className="animate-spin" /> Loading...
                                 </td>
                             </tr>
                         ) : sales.length === 0 ? (
                             <tr>
-                                <td colSpan={7} className={styles.emptyCell}>No sales found.</td>
+                                <td colSpan={8} className={styles.emptyCell}>No sales found.</td>
                             </tr>
                         ) : (
                             sales.map(sale => (
@@ -186,20 +232,47 @@ export default function SalesHistoryTable() {
                                         <div className={styles.itemsList}>
                                             {sale.sale_items.map((item, i) => (
                                                 <div key={i} className={styles.itemRow}>
-                                                    <span className={styles.qty}>{item.quantity}x</span>
+                                                    {editingSaleId === sale.id ? (
+                                                        <input 
+                                                            type="number" 
+                                                            min="1"
+                                                            style={{ width: '40px', padding: '0.1rem', marginRight: '4px', border: '1px solid #ccc', borderRadius: '4px' }}
+                                                            value={editQuantities[item.id] || ''}
+                                                            onChange={(e) => setEditQuantities(prev => ({ ...prev, [item.id]: parseInt(e.target.value) || 1 }))}
+                                                        />
+                                                    ) : (
+                                                        <span className={styles.qty}>{item.quantity}x</span>
+                                                    )}
                                                     <span className={styles.bookTitle}>{item.books?.title}</span>
                                                 </div>
                                             ))}
                                         </div>
                                     </td>
-                                    <td className={styles.amount}>R {sale.total_amount.toFixed(2)}</td>
-                                    <td>
-                                        <span className={`${styles.badge} ${styles[sale.payment_type]}`}>
-                                            {sale.payment_type}
-                                        </span>
+                                    <td className={styles.amount}>
+                                        {editingSaleId === sale.id ? (
+                                            `R ${sale.sale_items.reduce((sum, item) => sum + (item.price_at_sale * (editQuantities[item.id] || item.quantity)), 0).toFixed(2)}`
+                                        ) : (
+                                            `R ${sale.total_amount.toFixed(2)}`
+                                        )}
                                     </td>
                                     <td>
-                                        {sale.payment_status === 'ORDERED' ? (
+                                        {editingSaleId === sale.id ? (
+                                            <select 
+                                                value={editPaymentType} 
+                                                onChange={(e) => setEditPaymentType(e.target.value as any)}
+                                                style={{ padding: '0.2rem', borderRadius: '4px', border: '1px solid #ccc' }}
+                                            >
+                                                <option value="CASH">CASH</option>
+                                                <option value="EFT">EFT</option>
+                                            </select>
+                                        ) : (
+                                            <span className={`${styles.badge} ${styles[sale.payment_type]}`}>
+                                                {sale.payment_type}
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td>
+                                        {sale.payment_status === 'ORDERED' && editingSaleId !== sale.id ? (
                                             <select 
                                                 className={styles.statusSelect}
                                                 value="ORDERED"
@@ -211,7 +284,11 @@ export default function SalesHistoryTable() {
                                             </select>
                                         ) : (
                                             <span className={`${styles.statusBadge} ${styles[sale.payment_status]}`}>
-                                                {sale.payment_status}
+                                                {editingSaleId === sale.id ? (
+                                                    (sale.payment_type === 'CASH' && editPaymentType === 'EFT') ? 'PENDING' :
+                                                    (sale.payment_type === 'EFT' && editPaymentType === 'CASH' && sale.payment_status === 'PENDING') ? 'PAID' :
+                                                    sale.payment_status
+                                                ) : sale.payment_status}
                                             </span>
                                         )}
                                     </td>
@@ -227,6 +304,33 @@ export default function SalesHistoryTable() {
                                             </a>
                                         ) : (
                                             <span className={styles.noPop}>-</span>
+                                        )}
+                                    </td>
+                                    <td>
+                                        {editingSaleId === sale.id ? (
+                                            <div style={{ display: 'flex', gap: '4px', flexDirection: 'column' }}>
+                                                <button 
+                                                    onClick={() => handleSaveEdit(sale)} 
+                                                    disabled={savingSaleId === sale.id}
+                                                    style={{ padding: '0.25rem 0.5rem', cursor: 'pointer', background: 'var(--primary)', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem' }}
+                                                >
+                                                    {savingSaleId === sale.id ? 'Saving...' : 'Save'}
+                                                </button>
+                                                <button 
+                                                    onClick={handleCancelEdit} 
+                                                    disabled={savingSaleId === sale.id}
+                                                    style={{ padding: '0.25rem 0.5rem', cursor: 'pointer', background: '#ccc', color: '#333', border: 'none', borderRadius: '4px', fontSize: '0.8rem' }}
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button 
+                                                onClick={() => handleEditStart(sale)}
+                                                style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', cursor: 'pointer', background: 'transparent', border: '1px solid currentColor', borderRadius: '4px' }}
+                                            >
+                                                Edit
+                                            </button>
                                         )}
                                     </td>
                                 </tr>

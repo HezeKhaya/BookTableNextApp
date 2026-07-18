@@ -242,7 +242,7 @@ export async function getPendingSales() {
         .select(`
             *,
             customers ( first_name, last_name, phone_number ),
-            sale_items ( quantity, price_at_sale, books ( title ) )
+            sale_items ( id, book_id, quantity, price_at_sale, books ( title ) )
         `)
         .eq('payment_status', 'PENDING')
         .order('created_at', { ascending: false });
@@ -368,7 +368,7 @@ export async function getSalesHistory(
         .select(`
             *,
             customers ( first_name, last_name, phone_number ),
-            sale_items ( quantity, price_at_sale, books ( title ) )
+            sale_items ( id, book_id, quantity, price_at_sale, books ( title ) )
         `, { count: 'exact' });
 
     // Apply Filters
@@ -464,6 +464,90 @@ export async function getSalesHistory(
 
 
     return { sales: salesWithSignedUrls, count };
+}
+
+export async function updateSaleDetails(
+    saleId: string, 
+    newPaymentType: 'CASH' | 'EFT', 
+    items: { id: string, book_id: number, quantity: number, price_at_sale: number }[]
+) {
+    const supabase = await createClient();
+
+    // 1. Fetch current sale and items to calculate difference in stock
+    const { data: currentSale, error: fetchError } = await supabase
+        .from('sales')
+        .select(`
+            payment_type,
+            payment_status,
+            sale_items ( id, book_id, quantity )
+        `)
+        .eq('id', saleId)
+        .single();
+
+    if (fetchError || !currentSale) {
+        console.error('Error fetching current sale details:', fetchError);
+        return { error: 'Failed to fetch current sale details' };
+    }
+
+    let newStatus = currentSale.payment_status;
+
+    // Rules for payment type change
+    if (currentSale.payment_type === 'CASH' && newPaymentType === 'EFT') {
+        newStatus = 'PENDING';
+    } else if (currentSale.payment_type === 'EFT' && newPaymentType === 'CASH') {
+        if (currentSale.payment_status === 'PENDING') {
+            newStatus = 'PAID';
+        }
+    }
+
+    // 2. Calculate new total amount
+    const totalAmount = items.reduce((sum, item) => sum + (item.price_at_sale * item.quantity), 0);
+
+    // 3. Update Sale Record
+    const { error: updateSaleError } = await supabase
+        .from('sales')
+        .update({
+            payment_type: newPaymentType,
+            payment_status: newStatus,
+            total_amount: totalAmount
+        })
+        .eq('id', saleId);
+
+    if (updateSaleError) {
+        console.error('Error updating sale:', updateSaleError);
+        return { error: 'Failed to update sale' };
+    }
+
+    // 4. Update Sale Items & Adjust Stock
+    const currentItemsMap = new Map(currentSale.sale_items.map((i: any) => [i.id, i.quantity]));
+
+    for (const item of items) {
+        const oldQuantity = currentItemsMap.get(item.id) || 0;
+        const diff = item.quantity - oldQuantity;
+
+        if (diff !== 0) {
+            // Update sale item quantity
+            await supabase
+                .from('sale_items')
+                .update({ quantity: item.quantity })
+                .eq('id', item.id);
+
+            // Adjust book stock
+            if (item.book_id) {
+                // If diff > 0, we sold more, so decrease stock by diff.
+                // If diff < 0, we sold less, so increase stock by Math.abs(diff).
+                // So stock = stock - diff
+                const { data: book } = await supabase.from('books').select('qty_in_stock').eq('id', item.book_id).single();
+                if (book) {
+                    const newStock = Math.max(0, book.qty_in_stock - diff);
+                    await supabase.from('books').update({ qty_in_stock: newStock }).eq('id', item.book_id);
+                }
+            }
+        }
+    }
+
+    revalidatePath('/admin/record-keeping');
+    return { success: true };
 }
 
 // --- STOCK SNAPSHOTS ---
