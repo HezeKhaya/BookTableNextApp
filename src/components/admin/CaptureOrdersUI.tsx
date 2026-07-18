@@ -159,7 +159,7 @@ export default function CaptureOrdersUI() {
 
 function CaptureOrderModal({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
     const [step, setStep] = useState<1 | 2>(1);
-    const [code, setCode] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [fetchingBook, setFetchingBook] = useState(false);
     const [bookDetails, setBookDetails] = useState<any>(null);
     const [customQty, setCustomQty] = useState<number>(1);
@@ -172,9 +172,9 @@ function CaptureOrderModal({ onClose, onSuccess }: { onClose: () => void, onSucc
     const [submitting, setSubmitting] = useState(false);
 
     const handleFetchBook = async () => {
-        if (!code) return;
+        if (!identifier) return;
         setFetchingBook(true);
-        const { book, error } = await fetchBookDetailsFromSupplier(code);
+        const { book, error } = await fetchBookDetailsFromSupplier(identifier);
         setFetchingBook(false);
         
         if (error || !book) {
@@ -252,15 +252,15 @@ function CaptureOrderModal({ onClose, onSuccess }: { onClose: () => void, onSucc
                             <input
                                 type="text"
                                 className={styles.input}
-                                placeholder="Enter book code/ISBN..."
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
+                                placeholder="Enter book code or ISBN..."
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleFetchBook()}
                             />
                             <button 
                                 className={styles.primaryBtnFull} 
                                 onClick={handleFetchBook}
-                                disabled={!code || fetchingBook}
+                                disabled={!identifier || fetchingBook}
                             >
                                 {fetchingBook ? <Loader2 className={styles.spin} size={18} /> : 'Search Book'}
                             </button>

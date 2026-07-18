@@ -4,16 +4,16 @@ import { createClient } from '@/utils/supabase/server';
 import { revalidatePath } from 'next/cache';
 
 // Fetch book details from supplier using Azure Function
-export async function fetchBookDetailsFromSupplier(code: string) {
-    if (!code) return { error: 'Code is required' };
+export async function fetchBookDetailsFromSupplier(identifier: string) {
+    if (!identifier) return { error: 'Identifier is required' };
     
     // Attempt to use NEXT_PUBLIC_API_URL or a fallback (user should configure this if it fails)
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:7071/api';
     
     try {
-        const response = await fetch(`${baseUrl}/catalog/${code}`);
+        const response = await fetch(`${baseUrl}/catalog/${identifier}`);
         if (!response.ok) {
-            if (response.status === 404) return { error: `Book not found for code: ${code}` };
+            if (response.status === 404) return { error: `Book not found for identifier: ${identifier}` };
             return { error: `Failed to fetch book from supplier: ${response.statusText}` };
         }
         const textResponse = await response.text();
