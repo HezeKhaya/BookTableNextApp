@@ -7,7 +7,8 @@ import Header from '@/components/Header';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AddBookPage() {
-    const [code, setCode] = useState('');
+    const [identifier, setIdentifier] = useState('');
+    const [quantity, setQuantity] = useState<number | ''>(1);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
     const { user, loading } = useAuth();
@@ -32,9 +33,15 @@ export default function AddBookPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!code.trim()) {
+        if (!identifier.trim()) {
             setStatus('error');
-            setMessage('Please enter a code');
+            setMessage('Please enter a book code or SKU number');
+            return;
+        }
+
+        if (quantity === '' || quantity < 1) {
+            setStatus('error');
+            setMessage('Please enter a valid quantity');
             return;
         }
 
@@ -42,7 +49,7 @@ export default function AddBookPage() {
         setMessage('');
 
         try {
-            const response = await fetch(`/api/add-book?code=${encodeURIComponent(code)}`, {
+            const response = await fetch(`/api/add-book?identifier=${encodeURIComponent(identifier)}&quantity=${encodeURIComponent(quantity.toString())}`, {
                 method: 'POST',
             });
 
@@ -52,7 +59,8 @@ export default function AddBookPage() {
 
             setStatus('success');
             setMessage('Book added successfully!');
-            setCode('');
+            setIdentifier('');
+            setQuantity(1);
         } catch (error) {
             console.error('Failed to add book:', error);
             setStatus('error');
@@ -68,15 +76,31 @@ export default function AddBookPage() {
 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.inputGroup}>
-                        <label htmlFor="code" className={styles.label}>
-                            Book Code
+                        <label htmlFor="identifier" className={styles.label}>
+                            Book Code or SKU
                         </label>
                         <input
                             type="text"
-                            id="code"
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            placeholder="Enter book code"
+                            id="identifier"
+                            value={identifier}
+                            onChange={(e) => setIdentifier(e.target.value)}
+                            placeholder="Enter book code or SKU number"
+                            className={styles.input}
+                            disabled={status === 'loading'}
+                        />
+                    </div>
+
+                    <div className={styles.inputGroup}>
+                        <label htmlFor="quantity" className={styles.label}>
+                            Quantity
+                        </label>
+                        <input
+                            type="number"
+                            id="quantity"
+                            min="1"
+                            value={quantity}
+                            onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
+                            placeholder="Enter quantity"
                             className={styles.input}
                             disabled={status === 'loading'}
                         />
