@@ -54,17 +54,18 @@ export default function AddBookPage() {
             });
 
             if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
+                const errorText = await response.text();
+                throw new Error(errorText || `Error: ${response.statusText}`);
             }
 
             setStatus('success');
             setMessage('Book added successfully!');
             setIdentifier('');
             setQuantity(1);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to add book:', error);
             setStatus('error');
-            setMessage('Failed to add book. Please try again.');
+            setMessage(error.message || 'Failed to add book. Please try again.');
         }
     };
 
